@@ -1,0 +1,42 @@
+{
+  "displayOrder": ["bitcoin", "ethereum", "pulsechain", "base", "solana"],
+  "defaultExpanded": ["ethereum"],
+  "grouping": {
+    "evm": ["ethereum", "pulsechain", "base"],
+    "utxo": ["bitcoin"],
+    "other": ["solana"]
+  },
+  "assetCategories": {
+    "native": {
+      "priority": 1,
+      "icon": "coin",
+      "label": "Native Token"
+    },
+    "tokens": {
+      "priority": 2,
+      "icon": "tokens",
+      "label": "Tokens"
+    },
+    "nfts": {
+      "priority": 3,
+      "icon": "image",
+      "label": "NFTs"
+    },
+    "ordinals": {
+      "priority": 4,
+      "icon": "inscription",
+      "label": "Ordinals"
+    }
+  },
+  "avatarSettings": {
+    "defaultStyle": "geometric",
+    "imageCaching": true,
+    "supportedFormats": ["jpg", "png", "gif", "webp"],
+    "thumbnailSize": 64,
+    "ipfsGateways": [
+      "https://gateway.pinata.cloud/ipfs/",
+      "https://ipfs.io/ipfs/",
+      "https://cloudflare-ipfs.com/ipfs/"
+    ]
+  }
+}

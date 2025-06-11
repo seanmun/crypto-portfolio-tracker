@@ -1,0 +1,60 @@
+{
+  "ethereum": {
+    "name": "Ethereum",
+    "symbol": "ETH",
+    "chainId": 1,
+    "rpcUrl": "https://eth-mainnet.g.alchemy.com/v2/",
+    "explorerUrl": "https://etherscan.io",
+    "addressFormat": "hex",
+    "color": "#627eea",
+    "features": ["tokens", "nfts"],
+    "tokenStandards": ["ERC-20", "ERC-721", "ERC-1155"],
+    "nftApis": {
+      "alchemy": "/getNFTs",
+      "opensea": "/api/v1/assets"
+    }
+  },
+  "bitcoin": {
+    "name": "Bitcoin",
+    "symbol": "BTC",
+    "rpcUrl": "https://blockstream.info/api",
+    "explorerUrl": "https://blockstream.info",
+    "addressFormat": "base58",
+    "color": "#f7931a",
+    "features": ["ordinals"],
+    "ordinalsApi": "https://ordinals.com/api"
+  },
+  "pulsechain": {
+    "name": "Pulsechain",
+    "symbol": "PLS",
+    "chainId": 369,
+    "rpcUrl": "https://rpc.pulsechain.com",
+    "explorerUrl": "https://scan.pulsechain.com",
+    "addressFormat": "hex",
+    "color": "#ff006b",
+    "features": ["tokens", "nfts"],
+    "tokenStandards": ["PRC-20", "PRC-721", "PRC-1155"]
+  },
+  "base": {
+    "name": "Base",
+    "symbol": "ETH",
+    "chainId": 8453,
+    "rpcUrl": "https://mainnet.base.org",
+    "explorerUrl": "https://basescan.org",
+    "addressFormat": "hex",
+    "color": "#0052ff",
+    "features": ["tokens", "nfts"],
+    "tokenStandards": ["ERC-20", "ERC-721", "ERC-1155"]
+  },
+  "solana": {
+    "name": "Solana",
+    "symbol": "SOL",
+    "rpcUrl": "https://api.mainnet-beta.solana.com",
+    "explorerUrl": "https://explorer.solana.com",
+    "addressFormat": "base58",
+    "color": "#9945ff",
+    "features": ["tokens", "nfts"],
+    "tokenStandards": ["SPL"],
+    "nftStandard": "Metaplex"
+  }
+}
