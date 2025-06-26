@@ -284,9 +284,9 @@ export default function TestPage() {
 function AssetGrid({ assets, chainColor }: { assets: Asset[], chainColor: string }) {
   const [showAllNFTs, setShowAllNFTs] = useState(false);
   
-  // Separate NFTs from other assets for better organization
-  const regularAssets = assets.filter(asset => asset.type !== 'nft');
-  const nftAssets = assets.filter(asset => asset.type === 'nft');
+  // Separate NFTs AND ORDINALS from other assets for better organization
+  const regularAssets = assets.filter(asset => asset.type !== 'nft' && asset.type !== 'ordinal');
+  const nftAssets = assets.filter(asset => asset.type === 'nft' || asset.type === 'ordinal');
   
   // Control how many NFTs to show
   const nftsToShow = showAllNFTs ? nftAssets : nftAssets.slice(0, 12);
@@ -357,14 +357,28 @@ function AssetGrid({ assets, chainColor }: { assets: Asset[], chainColor: string
                 <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border hover:border-gray-300 transition-colors">
                   {nft.imageUrl ? (
                     <div className="relative w-full h-full">
-                      {/* Special handling for different content types */}
-                      {nft.contentType?.includes('html') || nft.collectionName?.toLowerCase().includes('quantum cat') ? (
-                        // For HTML content like Quantum Cats - use iframe or preview
-                        <div className="w-full h-full bg-gradient-to-br from-purple-100 to-pink-100 flex flex-col items-center justify-center text-xs text-center p-2">
-                          <div className="text-lg mb-1">🐱⚡</div>
-                          <div className="font-medium">Interactive</div>
-                          <div className="text-gray-600">HTML Content</div>
-                        </div>
+                      {/* Handle HTML content (like Quantum Cats) with iframe - based on working Pi code */}
+                      {(nft.contentType?.includes('text/html') || 
+                        nft.contentType?.includes('html') ||
+                        nft.name?.toLowerCase().includes('quantum cat') ||
+                        nft.collectionName?.toLowerCase().includes('quantum cat') ||
+                        nft.name?.toLowerCase().includes('interactive')) ? (
+                        <iframe
+                          src={nft.imageUrl}
+                          className="w-full h-full border-none bg-black rounded-lg"
+                          title={nft.name}
+                          sandbox="allow-scripts allow-same-origin"
+                          onLoad={() => {
+                            console.log(`✅ HTML content loaded for ${nft.name}`, nft.contentType);
+                          }}
+                          onError={(e) => {
+                            console.log(`❌ HTML content failed for ${nft.name}:`, nft.imageUrl, nft.contentType);
+                            const target = e.target as HTMLIFrameElement;
+                            target.style.display = 'none';
+                            const fallback = target.parentElement?.querySelector('.content-fallback') as HTMLElement;
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
                       ) : nft.contentType?.includes('text') ? (
                         // For text inscriptions
                         <div className="w-full h-full bg-gradient-to-br from-blue-100 to-gray-100 flex flex-col items-center justify-center text-xs text-center p-2">
@@ -373,45 +387,50 @@ function AssetGrid({ assets, chainColor }: { assets: Asset[], chainColor: string
                           <div className="text-gray-600">Inscription</div>
                         </div>
                       ) : nft.contentType?.includes('svg') ? (
-                        // For SVG content
-                        <div className="w-full h-full bg-gradient-to-br from-green-100 to-blue-100 flex flex-col items-center justify-center text-xs text-center p-2">
-                          <div className="text-lg mb-1">🎨</div>
-                          <div className="font-medium">Vector</div>
-                          <div className="text-gray-600">SVG Art</div>
-                        </div>
+                        // For SVG content - can display directly like images
+                        <img 
+                          src={nft.imageUrl} 
+                          alt={nft.name}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                          onLoad={() => {
+                            console.log(`✅ SVG loaded for ${nft.name}`);
+                          }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            console.log(`❌ SVG failed for ${nft.name}:`, nft.imageUrl);
+                            target.style.display = 'none';
+                            const fallback = target.parentElement?.querySelector('.content-fallback') as HTMLElement;
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
                       ) : (
-                        // Standard image ordinals
+                        // Standard image ordinals - improved error handling like working Pi code
                         <img 
                           src={nft.imageUrl} 
                           alt={nft.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          onLoad={() => {
+                            console.log(`✅ Image loaded for ${nft.name}`);
+                          }}
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            console.log(`❌ Failed to load image for ${nft.name}:`, nft.imageUrl);
+                            console.log(`❌ Image failed for ${nft.name}:`, nft.imageUrl);
                             target.style.display = 'none';
-                            // Show fallback
-                            const fallback = target.parentElement?.parentElement?.querySelector('.image-fallback') as HTMLElement;
+                            const fallback = target.parentElement?.querySelector('.content-fallback') as HTMLElement;
                             if (fallback) fallback.style.display = 'flex';
-                          }}
-                          onLoad={() => {
-                            console.log(`✅ Successfully loaded image for ${nft.name}`);
                           }}
                         />
                       )}
                       
-                      {/* Enhanced fallback for failed image loads */}
+                      {/* Enhanced fallback for failed content loads - based on working Pi code */}
                       <div 
-                        className="image-fallback absolute inset-0 bg-gradient-to-br from-orange-100 to-yellow-100 flex flex-col items-center justify-center text-xs text-center p-2"
+                        className="content-fallback absolute inset-0 bg-gradient-to-br from-orange-100 to-yellow-100 flex flex-col items-center justify-center text-xs text-center p-2"
                         style={{ display: 'none' }}
                       >
-                        <div className="text-lg mb-1">
-                          {nft.type === 'ordinal' ? '🟠' : '🖼️'}
-                        </div>
-                        <div className="font-medium">
-                          {nft.type === 'ordinal' ? 'Ordinal' : 'NFT'}
-                        </div>
+                        <div className="text-lg mb-1">🖼️</div>
+                        <div className="font-medium">Content Loading Error</div>
                         <div className="text-center text-gray-600">
-                          {nft.inscriptionNumber ? `#${nft.inscriptionNumber}` : 'Image Loading...'}
+                          #{nft.inscriptionNumber}
                         </div>
                         {nft.contentType && (
                           <div className="text-xs text-gray-500 mt-1">

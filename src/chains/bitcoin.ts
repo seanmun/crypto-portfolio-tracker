@@ -386,67 +386,21 @@ export class BitcoinHandler {
   }
 
   /**
-   * Get image URL for ordinal inscription with special handling
+   * Get image URL for ordinal inscription - using proxy approach from working Pi project
    */
   private getOrdinalImageUrl(inscription: any, specialType?: string): string | undefined {
-    // For Quantum Cats and other HTML/interactive content
-    if (specialType === 'quantum-cats' || specialType === 'interactive') {
-      // Quantum Cats are HTML that need to be rendered
-      const possibleUrls = [
-        inscription.preview_url,
-        `https://ordinals.com/preview/${inscription.id}`,
-        `https://ordinals.com/content/${inscription.id}`,
-        inscription.content_url,
-      ];
-      
-      for (const url of possibleUrls) {
-        if (url && typeof url === 'string' && url.startsWith('http')) {
-          return url;
-        }
-      }
-    }
+    const inscriptionId = inscription.id || inscription.inscription_id;
     
-    // For SVG content, we can display directly
-    if (specialType === 'svg' && inscription.content_url) {
-      return inscription.content_url;
-    }
-    
-    // For text inscriptions, return undefined to show placeholder
-    if (specialType === 'text') {
+    if (!inscriptionId) {
       return undefined;
     }
+
+    // Use local proxy endpoint approach (like the working Pi project)
+    // This avoids CORS issues by serving content through our own server
+    const proxyUrl = `/api/ordinals/content/${inscriptionId}`;
     
-    // Standard image ordinals - try multiple endpoints
-    const inscriptionId = inscription.id || inscription.inscription_id;
-    const possibleUrls = [
-      // Direct content URLs
-      inscription.content_url,
-      inscription.preview_url,
-      
-      // Ordinals.com endpoints
-      `https://ordinals.com/content/${inscriptionId}`,
-      `https://ordinals.com/preview/${inscriptionId}`,
-      
-      // Ord.io endpoints  
-      `https://ord.io/${inscriptionId}`,
-      
-      // Alternative ordinals services
-      `https://ordinalslite.com/content/${inscriptionId}`,
-      
-      // Hiro API content endpoint
-      `https://api.hiro.so/ordinals/v1/inscriptions/${inscriptionId}/content`,
-    ];
-
-    console.log(`🖼️ Trying image URLs for inscription ${inscriptionId}:`, possibleUrls);
-
-    // Return first valid-looking URL
-    for (const url of possibleUrls) {
-      if (url && typeof url === 'string' && url.startsWith('http')) {
-        return url;
-      }
-    }
-
-    return undefined;
+    console.log(`🖼️ Using proxy URL for ${inscriptionId}:`, proxyUrl);
+    return proxyUrl;
   }
 
   /**
